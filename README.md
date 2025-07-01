@@ -1,2 +1,2 @@
-# pacman-game
-JavaScript Pacman game
+# Pacman Javascript Game
+
