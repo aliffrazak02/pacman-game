@@ -33,10 +33,10 @@ window.onload = function() {
     document.addEventListener("keydown", function(event) {
         if (event.key === "ArrowUp" || event.key === "w") {
             pacman.updateDirection("U");
-        } else if (event.key === "ArrowDown" || event.key === "a") {
+        } else if (event.key === "ArrowDown" || event.key === "s") {
             pacman.updateDirection("D");
         }
-        else if (event.key === "ArrowLeft" || event.key === "s") {
+        else if (event.key === "ArrowLeft" || event.key === "a") {
             pacman.updateDirection("L");
         }
         else if (event.key === "ArrowRight" || event.key === "d") {
