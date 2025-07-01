@@ -28,6 +28,8 @@ window.onload = function() {
     console.log(walls.size);
     console.log(foods.size);
     console.log(ghosts.size);
+
+    update();
 }
 
 //X = wall, O = skip, P = pac man, ' ' = food
@@ -135,6 +137,25 @@ function loadImages() {
 
 }
 
+function update() {
+    draw();
+    setTimeout(update, 50);// Update every 50 milliseconds, 20 FPS
+
+}
+
+function draw() {
+    context.drawImage(pacman.image, pacman.x, pacman.y, pacman.width, pacman.height);
+    for (let ghost of ghosts.values()) {
+        context.drawImage(ghost.image, ghost.x, ghost.y, ghost.width, ghost.height);
+    }
+    for (let wall of walls.values()) {
+        context.drawImage(wall.image, wall.x, wall.y, wall.width, wall.height);
+    }
+    context.fillStyle = "white";
+    for (let food of foods.values()) {
+        context.fillRect(food.x, food.y, food.width, food.height);
+    }
+}
 class Block {
     constructor(image, x, y, width, height) {
         this.image = image;
