@@ -30,6 +30,19 @@ window.onload = function() {
     console.log(ghosts.size);
 
     update();
+    document.addEventListener("keydown", function(event) {
+        if (event.key === "ArrowUp" || event.key === "KeyW") {
+            pacman.updateDirection("U");
+        } else if (event.key === "ArrowDown" || event.key === "KeyS") {
+            pacman.updateDirection("D");
+        }
+        else if (event.key === "ArrowLeft" || event.key === "KeyA") {
+            pacman.updateDirection("L");
+        }
+        else if (event.key === "ArrowRight" || event.key === "KeyD") {
+            pacman.updateDirection("R");
+        }
+    });
 }
 
 //X = wall, O = skip, P = pac man, ' ' = food
@@ -138,12 +151,15 @@ function loadImages() {
 }
 
 function update() {
+    move();
     draw();
     setTimeout(update, 50);// Update every 50 milliseconds, 20 FPS
 
 }
 
 function draw() {
+    context.clearRect(0, 0, boardWidth, boardHeight);
+    // Draw the background
     context.drawImage(pacman.image, pacman.x, pacman.y, pacman.width, pacman.height);
     for (let ghost of ghosts.values()) {
         context.drawImage(ghost.image, ghost.x, ghost.y, ghost.width, ghost.height);
@@ -156,6 +172,28 @@ function draw() {
         context.fillRect(food.x, food.y, food.width, food.height);
     }
 }
+
+function move(){
+    pacman.x += pacman.velocityX;
+    pacman.y += pacman.velocityY;
+    // Check for collision with walls
+    for (let wall of walls.values()) {
+        if (checkCollision(pacman, wall)) {
+            // Reset position to start position
+            pacman.x -= pacman.velocityX; // Undo the last move
+            pacman.y -= pacman.velocityY; // Undo the last move
+            break; // Exit the loop after collision
+        }
+    }
+}
+
+function checkCollision(a,b) {
+    return a.x < b.x + b.width &&
+           a.x + a.width > b.x &&
+           a.y < b.y + b.height &&
+           a.y + a.height > b.y;    
+}
+
 class Block {
     constructor(image, x, y, width, height) {
         this.image = image;
@@ -166,5 +204,37 @@ class Block {
 
         this.startX = x;
         this.startY = y;
+
+        this.direction = "R"; // Default direction
+        this.velocityX = 0;
+        this.velocityY = 0;
+    }
+    updateDirection(direction) {
+        this.direction = direction
+        this.updateVelocity();
+    }
+
+    updateVelocity() {
+        if (this.direction === "U") {
+            this.velocityX = 0;
+            this.velocityY = -tileSize/4; // Move up at 1/4 tile speed
+            this.image = pacmanUpImage;
+
+        }
+        else if (this.direction === "D") {
+            this.velocityX = 0;
+            this.velocityY = tileSize/4; // Move down at 1/4 tile speed
+            this.image = pacmanDownImage;
+        }   
+        else if (this.direction === "L") {
+            this.velocityX = -tileSize/4; // Move left at 1/4 tile speed
+            this.velocityY = 0;
+            this.image = pacmanLeftImage;
+        }
+        else if (this.direction === "R") {
+            this.velocityX = tileSize/4; // Move right at 1/4 tile speed
+            this.velocityY = 0;
+            this.image = pacmanRightImage;
+        }
     }
 }
