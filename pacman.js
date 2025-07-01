@@ -210,8 +210,22 @@ class Block {
         this.velocityY = 0;
     }
     updateDirection(direction) {
+        const prevDirection = this.direction;
         this.direction = direction
         this.updateVelocity();
+        this.x += this.velocityX; // Update position based on new velocity  
+        this.y += this.velocityY; // Update position based on new velocity
+
+        for (let wall of walls.values()) {
+            if (checkCollision(this, wall)) {
+                // Reset position to start position
+                this.x -= this.velocityX; // Update position based on new velocity  
+                this.y -= this.velocityY; // Update position based on new velocity
+                this.direction = prevDirection; // Revert to previous direction
+                this.updateVelocity(); // Update velocity based on previous direction
+                return; // Exit the loop after collision
+            }
+        }
     }
 
     updateVelocity() {
