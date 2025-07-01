@@ -31,15 +31,15 @@ window.onload = function() {
 
     update();
     document.addEventListener("keydown", function(event) {
-        if (event.key === "ArrowUp" || event.key === "KeyW") {
+        if (event.key === "ArrowUp" || event.key === "w") {
             pacman.updateDirection("U");
-        } else if (event.key === "ArrowDown" || event.key === "KeyS") {
+        } else if (event.key === "ArrowDown" || event.key === "a") {
             pacman.updateDirection("D");
         }
-        else if (event.key === "ArrowLeft" || event.key === "KeyA") {
+        else if (event.key === "ArrowLeft" || event.key === "s") {
             pacman.updateDirection("L");
         }
-        else if (event.key === "ArrowRight" || event.key === "KeyD") {
+        else if (event.key === "ArrowRight" || event.key === "d") {
             pacman.updateDirection("R");
         }
     });
