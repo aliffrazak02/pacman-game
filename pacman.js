@@ -17,34 +17,6 @@ let pacmanLeftImage;
 let pacmanRightImage;
 let wallImage;
 
-window.onload = function() {
-    board = document.getElementById("board");
-    board.width = boardWidth;
-    board.height = boardHeight;
-    context = board.getContext("2d");
-
-    loadImages();
-    loadMap();
-    console.log(walls.size);
-    console.log(foods.size);
-    console.log(ghosts.size);
-
-    update();
-    document.addEventListener("keydown", function(event) {
-        if (event.key === "ArrowUp" || event.key === "w") {
-            pacman.updateDirection("U");
-        } else if (event.key === "ArrowDown" || event.key === "s") {
-            pacman.updateDirection("D");
-        }
-        else if (event.key === "ArrowLeft" || event.key === "a") {
-            pacman.updateDirection("L");
-        }
-        else if (event.key === "ArrowRight" || event.key === "d") {
-            pacman.updateDirection("R");
-        }
-    });
-}
-
 //X = wall, O = skip, P = pac man, ' ' = food
 //Ghosts: b = blue, o = orange, p = pink, r = red
 const tileMap = [
@@ -76,6 +48,36 @@ const foods = new Set();
 const ghosts = new Set();
 let pacman;
 
+window.onload = function() {
+    board = document.getElementById("board");
+    board.width = boardWidth;
+    board.height = boardHeight;
+    context = board.getContext("2d");
+
+    loadImages();
+    loadMap();
+    console.log(walls.size);
+    console.log(foods.size);
+    console.log(ghosts.size);
+
+    update();
+    document.addEventListener("keydown", function(event) {
+        if (event.key === "ArrowUp" || event.key === "w") {
+            pacman.updateDirection("U");
+        } else if (event.key === "ArrowDown" || event.key === "s") {
+            pacman.updateDirection("D");
+        }
+        else if (event.key === "ArrowLeft" || event.key === "a") {
+            pacman.updateDirection("L");
+        }
+        else if (event.key === "ArrowRight" || event.key === "d") {
+            pacman.updateDirection("R");
+        }
+    });
+}
+
+// Function to load the map from the tileMap array
+// This function will create Block objects for walls, foods, ghosts, and pacman 
 function loadMap() {
     walls.clear();
     foods.clear();
@@ -120,6 +122,8 @@ function loadMap() {
     }
 }
 
+// Function to load images for the game
+// This function will create Image objects for ghosts, pacman, and walls
 function loadImages() {
     blueGhostImage = new Image();
     blueGhostImage.src = "images/blueGhost.png";
@@ -150,6 +154,8 @@ function loadImages() {
 
 }
 
+// Function to update the game state
+// This function will move pacman, draw the game board, and check for collisions
 function update() {
     move();
     draw();
@@ -157,6 +163,8 @@ function update() {
 
 }
 
+// Function to draw the game board
+// This function will clear the canvas and draw pacman, ghosts, walls, and food
 function draw() {
     context.clearRect(0, 0, boardWidth, boardHeight);
     // Draw the background
@@ -173,6 +181,8 @@ function draw() {
     }
 }
 
+// Function to move pacman
+// This function will update pacman's position based on its velocity and check for collisions with walls
 function move(){
     pacman.x += pacman.velocityX;
     pacman.y += pacman.velocityY;
@@ -187,6 +197,9 @@ function move(){
     }
 }
 
+
+// Function to check for collision between two rectangles
+// This function will return true if the rectangles overlap, false otherwise
 function checkCollision(a,b) {
     return a.x < b.x + b.width &&
            a.x + a.width > b.x &&
@@ -194,6 +207,8 @@ function checkCollision(a,b) {
            a.y + a.height > b.y;    
 }
 
+// Class to represent a block in the game
+// This class will be used for walls, foods, ghosts, and pacman
 class Block {
     constructor(image, x, y, width, height) {
         this.image = image;
