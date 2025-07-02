@@ -53,7 +53,8 @@ let score = 0;
 let lives = 3;
 let gameOver = false;
 
-
+// Function to initialize the game
+// This function will set up the game board, load images, and start the game loop
 window.onload = function() {
     board = document.getElementById("board");
     board.width = boardWidth;
@@ -81,7 +82,7 @@ function loadMap() {
     walls.clear();
     foods.clear();
     ghosts.clear();
-
+    // Reset score and lives
     for (let r=0;r< rowCount; r++) {
         for (let c=0; c< colCount; c++) {
             const row = tileMap[r];
@@ -89,7 +90,7 @@ function loadMap() {
 
             const x = c* tileSize;  
             const y = r* tileSize;
-
+            // Create Block objects based on the tileMap character
             if (tileMapChar === "X") {
                 const wall = new Block(wallImage, x, y, tileSize, tileSize);
                 walls.add(wall);
@@ -168,9 +169,11 @@ function update() {
 // Function to draw the game board
 // This function will clear the canvas and draw pacman, ghosts, walls, and food
 function draw() {
+    // Clear the canvas
     context.clearRect(0, 0, boardWidth, boardHeight);
     // Draw the background
     context.drawImage(pacman.image, pacman.x, pacman.y, pacman.width, pacman.height);
+    // Draw walls, ghosts, and food
     for (let ghost of ghosts.values()) {
         context.drawImage(ghost.image, ghost.x, ghost.y, ghost.width, ghost.height);
     }
@@ -251,6 +254,7 @@ function move(){
     }
 
     let foodEaten = null;
+    // Check for collision with food
     for (let food of foods.values()) {
         if (checkCollision(pacman, food)) {
             // Remove the food from the set
@@ -262,7 +266,7 @@ function move(){
     }
 
     foods.delete(foodEaten); // Remove the eaten food from the set
-
+    // Check if all food is eaten
     if (foods.size === 0) {
         loadMap(); // Reload the map if all food is eaten
         resetPosition(); // Reset pacman's position
@@ -278,7 +282,7 @@ function checkCollision(a,b) {
            a.y < b.y + b.height &&
            a.y + a.height > b.y;    
 }
-
+// Function to move pacman based on keyboard input
 function movePacman(event) {
     if (gameOver) {if (event.key === "Enter") {
             // Reset the game
@@ -288,6 +292,7 @@ function movePacman(event) {
             loadMap(); // Reload the map to reset the game state
             update(); // Restart the game loop
         }}
+        // Check for arrow keys or WASD keys to change pacman's direction
         if (event.key === "ArrowUp" || event.key === "w") {
             pacman.updateDirection("U");
         } else if (event.key === "ArrowDown" || event.key === "s") {
@@ -316,7 +321,7 @@ function movePacman(event) {
         
 
 }
-
+// Function to reset pacman's position and ghosts' positions
 function resetPosition() {
     pacman.reset();
     pacman.velocityX = 0;
@@ -348,6 +353,7 @@ class Block {
         this.velocityX = 0;
         this.velocityY = 0;
     }
+    // Method to update the direction of the block
     updateDirection(direction) {
         const prevDirection = this.direction;
         this.direction = direction
@@ -366,7 +372,7 @@ class Block {
             }
         }
     }
-
+    // Method to update the velocity based on the current direction
     updateVelocity() {
         if (this.direction === "U") {
             this.velocityX = 0;
@@ -385,6 +391,7 @@ class Block {
             this.velocityY = 0;
         }
     }
+    // Method to reset the position of the block to its starting position
     reset(){
     this.x = this.startX;
     this.y = this.startY;
