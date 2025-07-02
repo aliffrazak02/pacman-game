@@ -48,6 +48,8 @@ const foods = new Set();
 const ghosts = new Set();
 let pacman;
 
+const directions = ["U", "D", "L", "R"];
+
 window.onload = function() {
     board = document.getElementById("board");
     board.width = boardWidth;
@@ -60,20 +62,13 @@ window.onload = function() {
     console.log(foods.size);
     console.log(ghosts.size);
 
+    for (let ghost of ghosts.values()) {
+        const randomDirection = directions[Math.floor(Math.random() * 4)];
+        ghost.updateDirection(randomDirection);
+    }
+
     update();
-    document.addEventListener("keydown", function(event) {
-        if (event.key === "ArrowUp" || event.key === "w") {
-            pacman.updateDirection("U");
-        } else if (event.key === "ArrowDown" || event.key === "s") {
-            pacman.updateDirection("D");
-        }
-        else if (event.key === "ArrowLeft" || event.key === "a") {
-            pacman.updateDirection("L");
-        }
-        else if (event.key === "ArrowRight" || event.key === "d") {
-            pacman.updateDirection("R");
-        }
-    });
+    document.addEventListener("keydown", movePacman);
 }
 
 // Function to load the map from the tileMap array
@@ -195,6 +190,26 @@ function move(){
             break; // Exit the loop after collision
         }
     }
+    for (let ghost of ghosts.values()) {
+        ghost.x += ghost.velocityX;
+        ghost.y += ghost.velocityY;
+        // Check for collision with walls
+        for (let wall of walls.values()) {
+            if (checkCollision(ghost, wall)) {
+                // Reset position to start position
+                ghost.x -= ghost.velocityX; // Undo the last move
+                ghost.y -= ghost.velocityY; // Undo the last move
+                break; // Exit the loop after collision
+            }
+        }
+        // Check for collision with pacman
+        if (checkCollision(pacman, ghost)) {
+            // Game over logic can be added here
+            alert("Game Over! Pacman collided with a ghost!");
+            loadMap(); // Reset the game by reloading the map
+            return; // Exit the function to stop further processing
+        }
+    }
 }
 
 
@@ -205,6 +220,35 @@ function checkCollision(a,b) {
            a.x + a.width > b.x &&
            a.y < b.y + b.height &&
            a.y + a.height > b.y;    
+}
+
+movePacman = function(event) {
+
+        if (event.key === "ArrowUp" || event.key === "w") {
+            pacman.updateDirection("U");
+        } else if (event.key === "ArrowDown" || event.key === "s") {
+            pacman.updateDirection("D");
+        }
+        else if (event.key === "ArrowLeft" || event.key === "a") {
+            pacman.updateDirection("L");
+        }
+        else if (event.key === "ArrowRight" || event.key === "d") {
+            pacman.updateDirection("R");
+        }
+
+        if (pacman.direction === "U") {
+            pacman.image = pacmanUpImage;
+        }
+        else if (pacman.direction === "D") {
+            pacman.image = pacmanDownImage;
+        }
+        else if (pacman.direction === "L") {
+            pacman.image = pacmanLeftImage;
+        }
+        else if (pacman.direction === "R") {
+            pacman.image = pacmanRightImage;
+        }
+    
 }
 
 // Class to represent a block in the game
@@ -247,23 +291,18 @@ class Block {
         if (this.direction === "U") {
             this.velocityX = 0;
             this.velocityY = -tileSize/4; // Move up at 1/4 tile speed
-            this.image = pacmanUpImage;
-
         }
         else if (this.direction === "D") {
             this.velocityX = 0;
             this.velocityY = tileSize/4; // Move down at 1/4 tile speed
-            this.image = pacmanDownImage;
         }   
         else if (this.direction === "L") {
             this.velocityX = -tileSize/4; // Move left at 1/4 tile speed
             this.velocityY = 0;
-            this.image = pacmanLeftImage;
         }
         else if (this.direction === "R") {
             this.velocityX = tileSize/4; // Move right at 1/4 tile speed
             this.velocityY = 0;
-            this.image = pacmanRightImage;
         }
     }
 }
