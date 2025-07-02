@@ -49,6 +49,10 @@ const ghosts = new Set();
 let pacman;
 
 const directions = ["U", "D", "L", "R"];
+let score = 0;
+let lives = 3;
+let gameOver = false;
+
 
 window.onload = function() {
     board = document.getElementById("board");
@@ -152,6 +156,9 @@ function loadImages() {
 // Function to update the game state
 // This function will move pacman, draw the game board, and check for collisions
 function update() {
+    if (gameOver) {
+        return; // Stop updating if the game is over
+    }
     move();
     draw();
     setTimeout(update, 50);// Update every 50 milliseconds, 20 FPS
@@ -173,6 +180,22 @@ function draw() {
     context.fillStyle = "white";
     for (let food of foods.values()) {
         context.fillRect(food.x, food.y, food.width, food.height);
+    }
+
+    // Draw the score
+    context.fillStyle = "white";
+    context.font = "20px Arial";
+    if (gameOver){
+        context.fillStyle = "red";
+        context.font = "40px Arial";
+        context.fillText("Game Over!", boardWidth / 2 - 100, boardHeight / 2);
+        context.font = "20px Arial";
+        context.fillText("Final Score: " + score, boardWidth / 2 - 70, boardHeight / 2 + 30);
+        context.fillText("Press Enter to restart", boardWidth / 2 - 80, boardHeight/ 2 + 60);
+        return; // Stop drawing if the game is over
+    } else {
+        context.fillText("Score: " + score, 10, 20);    
+        context.fillText("Lives: " + lives, boardWidth - 100, 20);
     }
 }
 
@@ -217,10 +240,32 @@ function move(){
         // Check for collision with pacman
         if (checkCollision(pacman, ghost)) {
             // Game over logic can be added here
-            alert("Game Over! Pacman collided with a ghost!");
-            loadMap(); // Reset the game by reloading the map
+            lives -= 1; // Decrease lives by 1
+            if (lives <= 0) {
+                gameOver = true; // Set game over flag
+            }
+            resetPosition(); // Reset pacman's position
+            console.log("Pacman collided with a ghost!");
             return; // Exit the function to stop further processing
         }
+    }
+
+    let foodEaten = null;
+    for (let food of foods.values()) {
+        if (checkCollision(pacman, food)) {
+            // Remove the food from the set
+            foods.delete(food);
+            foodEaten = food; // Store the eaten food for score update
+            score += 10;
+            break; // Exit the loop after eating one food
+        }
+    }
+
+    foods.delete(foodEaten); // Remove the eaten food from the set
+
+    if (foods.size === 0) {
+        loadMap(); // Reload the map if all food is eaten
+        resetPosition(); // Reset pacman's position
     }
 }
 
@@ -234,8 +279,15 @@ function checkCollision(a,b) {
            a.y + a.height > b.y;    
 }
 
-movePacman = function(event) {
-
+function movePacman(event) {
+    if (gameOver) {if (event.key === "Enter") {
+            // Reset the game
+            score = 0;
+            lives = 3;
+            gameOver = false;
+            loadMap(); // Reload the map to reset the game state
+            update(); // Restart the game loop
+        }}
         if (event.key === "ArrowUp" || event.key === "w") {
             pacman.updateDirection("U");
         } else if (event.key === "ArrowDown" || event.key === "s") {
@@ -260,8 +312,24 @@ movePacman = function(event) {
         else if (pacman.direction === "R") {
             pacman.image = pacmanRightImage;
         }
-    
+
+        
+
 }
+
+function resetPosition() {
+    pacman.reset();
+    pacman.velocityX = 0;
+    pacman.velocityY = 0;
+    for (let ghost of ghosts.values()) {
+        ghost.reset();
+        const randomDirection = directions[Math.floor(Math.random() * 4)];
+        ghost.updateDirection(randomDirection); // Change direction randomly
+    }
+}
+
+
+    
 
 // Class to represent a block in the game
 // This class will be used for walls, foods, ghosts, and pacman
@@ -317,4 +385,8 @@ class Block {
             this.velocityY = 0;
         }
     }
+    reset(){
+    this.x = this.startX;
+    this.y = this.startY;
+}
 }
