@@ -29,7 +29,7 @@ const tileMap = [
     "XXXX XXXX XXXX XXXX",
     "OOOX X       X XOOO",
     "XXXX X XXrXX X XXXX",
-    "O       bpo       O",
+    "X       bpo       X",
     "XXXX X XXXXX X XXXX",
     "OOOX X       X XOOO",
     "XXXX X XXXXX X XXXX",
@@ -191,6 +191,17 @@ function move(){
         }
     }
     for (let ghost of ghosts.values()) {
+
+        if (ghost.y == tileSize*9 && ghost.direction != 'U' && ghost.direction != 'D') {
+            // If ghost is at row 9, change direction to up or down
+            const rand = Math.random();
+            if (rand < 0.3) {
+                ghost.updateDirection("U");
+            } else if (rand < 0.6) {
+                ghost.updateDirection("D");
+            }
+            // else: do nothing, keep current direction
+        }
         ghost.x += ghost.velocityX;
         ghost.y += ghost.velocityY;
         // Check for collision with walls
@@ -199,6 +210,7 @@ function move(){
                 // Reset position to start position
                 ghost.x -= ghost.velocityX; // Undo the last move
                 ghost.y -= ghost.velocityY; // Undo the last move
+                ghost.updateDirection(directions[Math.floor(Math.random() * 4)]); // Change direction randomly
                 break; // Exit the loop after collision
             }
         }
