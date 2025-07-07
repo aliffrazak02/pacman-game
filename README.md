@@ -2,6 +2,8 @@
 
 A Pac-Man game made entirely with JavaScript.
 
+![Pacman game screenshot](images/screenshot.png)
+
 ## Current Features
 
 * All ghosts move randomly
